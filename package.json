@@ -9,11 +9,13 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "description": "",
   "dependencies": {
     "cloudinary": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "express-fileupload": "^1.5.0"
-  }
+    "express-fileupload": "^1.5.1",
+    "mongodb": "^6.8.0",
+    "mongosh": "^2.2.12"
+  },
+  "description": ""
 }
