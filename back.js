@@ -20,7 +20,7 @@ app.use(cors({ origin: "http://127.0.0.1:5500" }))
 app.use(fileUpload({ useTempFiles: true }))
 app.use(express.urlencoded({ extended: false }))
 
-app.post("/upload", (req, res) => {
+app.post("/upload", async(req, res) => {
     let file = req.files.file;
     console.log(file);
 
@@ -30,6 +30,9 @@ app.post("/upload", (req, res) => {
                     res.status(500).send(JSON.stringify('Error uploading to Cloudinary'));
                 } else {
                     console.log(result);
+                    console.log(result.secure_url)
+                    let url = result.secure_url
+                    let detail = db.collection('files').insertOne({url})
                     res.status(200).send(JSON.stringify('File uploaded to Cloudinary'));
                 }
             });
