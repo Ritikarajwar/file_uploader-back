@@ -16,45 +16,82 @@ cloudinary.config({
 });
 
 app.use(express.json());
-app.use(cors({ origin: "http://127.0.0.1:5500" }))
+app.use(cors({ origin: "*" }))
 app.use(fileUpload({ useTempFiles: true }))
 app.use(express.urlencoded({ extended: false }))
 
 app.post("/upload", async (req, res) => {
     let file = req.files.file;
-    console.log(file);
+    // console.log(file);
+    let { Name, Number, Email, State, City } = { ...req.body };
+
 
     cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
         if (err) {
             console.error("this is error:" + err);
             res.status(500).send(JSON.stringify('Error uploading to Cloudinary'));
         } else {
-            console.log(result);
+            // console.log(result);
             console.log(result.secure_url)
             let url = result.secure_url
             let publicId = result.public_id
-            console.log(publicId)
-            let detail = await db.collection('files').insertOne({ url })
-            res.status(200).send(JSON.stringify('File uploaded to Cloudinary'));
+            // console.log(publicId)
+            let detail = await db.collection('files').insertOne({ Name, Number, Email, State, City, url, publicId })
+            res.status(200).send(JSON.stringify('File uploaded to Cloudinary'))
         }
     });
 
 
 });
 
+app.get("/getdata",async(req,res)=>{
+    let data = await db.collection('files').find().toArray();
+    res.send(data);
+})
 
-app.post("/delete", async (req, res) => {
-    console.log(req.body)
-     let publicId = req.body.publicId
+app.delete("/delete", async (req, res) => {
+    // console.log(req.body.url)
+    let url = req.body.url
 
-    cloudinary.uploader.destroy(publicId, function (error, result) {
-        console.log("hello")
-        if (error) {
-            console.error('Error deleting file:', error);
-        } else {
-            console.log('File deleted successfully:', result);
+    let db_url = await db.collection('files').find().toArray()
+    // console.log(db_url[0].url)
+    let length = db_url.length
+    // console.log(length)
+    // console.log(db_url[1].publicId)
+    
+    for (let i = 0; i < db_url.length; i++) {
+            // console.log("hi")
+        if (db_url[i].url == url) {
+            // console.log('same')
+
+            console.log(db_url[i].publicId)
+            let publicId = db_url[i].publicId
+            cloudinary.uploader.destroy(publicId, function (error, result) {
+                // console.log("hello")
+                if (error) {
+                    console.error('Error deleting file:', error)
+                } else {
+                    let detail = db.collection('files').deleteOne({ url: url })
+                    res.send('File deleted successfully')
+                    console.log('File deleted successfully:', result)
+                }
+            });
         }
-    });
+        
+
+    }
+
+    // http://res.cloudinary.com/da2oqj7qe/image/upload/v1721224358/sgosqeucvwrrgv5jzfyz.pdf
+    // let publicId = req.body.publicId
+
+    // cloudinary.uploader.destroy(publicId, function (error, result) {
+    //     console.log("hello")
+    //     if (error) {
+    //         console.error('Error deleting file:', error);
+    //     } else {
+    //         console.log('File deleted successfully:', result);
+    //     }
+    // });
 
 })
 
