@@ -1,4 +1,4 @@
 import{MongoClient} from "mongodb"
-const connection = MongoClient.connect("mongodb://127.0.0.1:27017")
+const connection = MongoClient.connect("mongodb://localhost:27017")
 export const dbName = "fileuploader"
 export default connection
