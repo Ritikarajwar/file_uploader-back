@@ -1,8 +1,8 @@
-import express from "express";
-import cors from "cors";
-import { v2 as cloudinary } from 'cloudinary';
-import fileUpload from "express-fileupload";
-import connection, { dbName } from "./connection.js";
+import express from "express"
+import cors from "cors"
+import { v2 as cloudinary } from 'cloudinary'
+import fileUpload from "express-fileupload"
+import connection, { dbName } from "./connection.js"
 
 
 const app = express();
@@ -23,13 +23,13 @@ app.use(express.urlencoded({ extended: false }))
 app.post("/upload", async (req, res) => {
     let file = req.files.file;
     // console.log(file);
-    let { Name, Number, Email, State, City } = { ...req.body };
+    let { Name, Number, Email, State, City } = { ...req.body }
 
 
     cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
         if (err) {
             console.error("this is error:" + err);
-            res.status(500).send(JSON.stringify('Error uploading to Cloudinary'));
+            res.status(500).send(JSON.stringify('Error uploading to Cloudinary'))
         } else {
             // console.log(result);
             console.log(result.secure_url)
@@ -45,8 +45,8 @@ app.post("/upload", async (req, res) => {
 });
 
 app.get("/getdata",async(req,res)=>{
-    let data = await db.collection('files').find().toArray();
-    res.send(data);
+    let data = await db.collection('files').find().toArray()
+    res.send(data)
 })
 
 app.delete("/delete", async (req, res) => {
@@ -75,7 +75,7 @@ app.delete("/delete", async (req, res) => {
                     res.send('File deleted successfully')
                     console.log('File deleted successfully:', result)
                 }
-            });
+            })
         }
         
 
